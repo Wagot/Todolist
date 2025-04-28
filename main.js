@@ -24,61 +24,121 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const db = getFirestore(app);
 
-export async function ambiltoDOList() {
-  const refDokumen = collection(db, "toDOList");
-  const kueri = query(refDokumen, orderBy("toDOList"));
-  const cuplikanKueri = await getDocs(kueri);
-  
+export async function ambildaftartugas() {
+  const refDokumen = collection(db, "senin");
+  const kueri = query(refDokumen, orderBy("tugas"));
+  const cuplikankueri = await getDocs(kueri);
+
   let hasil = [];
-  cuplikanKueri.forEach((dok) => {
+  cuplikankueri.forEach((dok) => {
     hasil.push({
-      id: dok.id, 
+      id: dok.id,
       tugas: dok.data().tugas,
-      prioritas: dok.data().prioritas,
       status: dok.data().status,
-      tanggal: dok.data().tanggal
+      prioritas: dok.data().prioritas,
+      tanggal: dok.data().tanggal,
     });
   });
-  
+
   return hasil;
 }
 
-export function formatAngka(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
-
-export async function tambahtoDOList(tugas, prioritas, status, tanggal) {
+export async function tambahtugas(tugas, status, prioritas, tanggal) {
   try {
-    const dokRef = await addDoc(collection(db, 'toDOList'), {
-      tugas:  tugas,
-      prioritas: prioritas,
+    const dokRef = await addDoc(collection(db, 'senin'), {
+      tugas: tugas,
       status: status,
-      tanggal: tanggal
+      prioritas: prioritas,
+      tanggal: tanggal,
     });
-    console.log('Berhasil menambah toDOList' + dokRef.id);
+    console.log('berhasil menembah tugas ' + dokRef.id);
   } catch (e) {
-    console.log('Gagal menambah toDOList' + e);
+    console.log('gagal menambah tugas ' + e);
   }
 }
 
-export async function hapustoDOList(docId) {
-  await deleteDoc(doc(db, "toDOList", docId));
+export async function hapustugas(docId) {
+  await deleteDoc(doc(db, "senin", docId));
 }
 
-export async function ubahtoDOList(docId, tugas, prioritas, status, tanggal) {
-  await updateDoc(doc(db, "toDOList", docId),{
+export async function ubahtugas(docId, tugas, status, prioritas, tanggal) {
+  await updateDoc(doc(db, "senin", docId), {
     tugas: tugas,
-    prioritas: prioritas,
     status: status,
-    tanggal: tanggal
+    prioritas: prioritas,
+    tanggal: tanggal,
   });
 }
 
-export async function ambiltoDOList(docId) {
-  const docRef = await doc(db, "toDOList", docId);
+export async function ambiltugas(docId) {
+  const docRef = await doc(db, "senin", docId);
   const docSnap = await getDoc(docRef);
-  
+
   return await docSnap.data();
 }
+
+function ubahStatus(tombol) {
+  let status = tombol.dataset.status;
+
+  if (status === "Selesai") {
+    tombol.textContent = "Belum Selesai";
+    tombol.dataset.status = "Belum Selesai";
+  } else {
+    tombol.textContent = "Selesai";
+    tombol.dataset.status = "Selesai";
+  }
+}
+
+// Event listener untuk hapus tugas
+$(".tombol-hapus").click(async function () {
+  await hapustugas($(this).attr("data-id"));
+  location.reload();
+});
+
+// Event listener untuk ubah tugas
+$(".ubah").click(async function () {
+  window.location.replace("ubahtugas.html?docId=" + $(this).attr("data-id"));
+});
+
+// Gunakan event delegation agar berfungsi pada elemen dinamis
+$(document).on("click", ".btn-status", function () {
+  let tugasId = $(this).attr("data-id");
+  let statusSekarang = $(this).attr("data-status");
+  let statusBaru;
+
+  if (statusSekarang === "Belum Selesai") {
+    statusBaru = "Sedang Dikerjakan";
+  } else if (statusSekarang === "Sedang Dikerjakan") {
+    statusBaru = "Selesai";
+  } else {
+    statusBaru = "Belum Selesai";
+  }
+
+  // Update tampilan tombol
+  $(this).attr("data-status", statusBaru);
+  $(this).text(statusBaru);
+  updateWarnaStatus($(this), statusBaru);
+
+  // Tambahkan kode AJAX jika ingin menyimpan perubahan status ke database
+  console.log(`Status tugas ID ${tugasId} diubah menjadi ${statusBaru}`);
+});
+
+// Fungsi untuk memperbarui warna tombol berdasarkan status
+function updateWarnaStatus(button, status) {
+  if (status === "Belum Selesai") {
+    button.css("background-color", "#dc3545").css("color", "white");
+  } else if (status === "Sedang Dikerjakan") {
+    button.css("background-color", "#ffc107").css("color", "black");
+  } else {
+    button.css("background-color", "#28a745").css("color", "white");
+  }
+}
+
+// Atur warna status setelah halaman dimuat
+$(document).ready(function () {
+  $(".btn-status").each(function () {
+    updateWarnaStatus($(this), $(this).attr("data-status"));
+  });
+});
