@@ -12,52 +12,6 @@ import {
   updateDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
 
-Enable Multi-factor Authentication (MFA) on your Google Account before May 13, 2025 to keep accessing Firebase. Learn more 
-Project settings
-General
-Cloud Messaging
-Integrations
-Service accounts
-Data privacy
-Users and permissions
-Your project
-Project name
-Produl
-Project ID 
-produl
-Project number 
-77023582951
-Web API Key 
-No Web API Key for this project
-Environment
-This setting customizes your project for different stages of the app lifecycle
-Environment type
-Unspecified
-Your apps
-App nickname
-Kode
-App ID 
-1:77023582951:web:5fd60105e5b08cda366042
-SDK setup and configuration
-
-npm
-
-CDN
-
-Config
-If you're already using npm and a module bundler such as webpack or Rollup, you can run the following command to install the latest SDK (Learn more):
-
-npm install firebase
-Then, initialize Firebase and begin using the SDKs for the products you'd like to use.
-
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyATgcvem8XVd_Au44mcR2FKjKctx1MmZsQ",
   authDomain: "produl.firebaseapp.com",
